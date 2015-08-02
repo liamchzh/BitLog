@@ -9,11 +9,3 @@ BitLog是用python + tkinter写一款用于BIT的宽带认证客户端。
 
 前一个版本是用tkinter写的，是我第一个用python写的有界面的小玩意。当时写的时候对tkinter了解甚少，基本是一边学习一边开发，所以最后代码结构非常凌乱，当时为了达到目的，胡乱地使用「类」。至于界面的美观性更不用谈了。
 这个版本是用pygtk写的界面。也是一边学习一边开发，但是这次这个结构清晰多了，界面也更加简洁。
-
-下面是界面截图：
-
-![Alt text](http://liamchzh.com/wp-content/uploads/2013/01/BitLog%E4%B8%BB%E7%95%8C%E9%9D%A2.jpg)
-
-![Alt text](http://liamchzh.com/wp-content/uploads/2013/01/BitLog%E8%AE%BE%E7%BD%AE.jpg)
-
-![Alt text](http://liamchzh.com/wp-content/uploads/2013/01/BitLog%E5%85%B3%E4%BA%8E.jpg)
