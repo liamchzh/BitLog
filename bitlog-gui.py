@@ -1,18 +1,17 @@
 ﻿# coding:utf-8
 """
-Author: Liam  
+Author: Liam
 E-mail: liamchzh@gmail.com
 """
 
-import pygtk
-import gtk
-import urllib
-import urllib2
 import cookielib
+import cPickle as pickle
+import gtk
 import md5
 import re
-import os
-import cPickle as pickle
+import urllib
+import urllib2
+
 
 class MainFrame(gtk.Window):
     def __init__(self):
@@ -23,12 +22,12 @@ class MainFrame(gtk.Window):
         self.set_position(gtk.WIN_POS_CENTER) # 窗口位置
         self.connect("destroy", gtk.main_quit)
         self.set_icon_from_file("icon.png")
-        
+
         #LOGO "BitLog"
-        logo = gtk.Label() 
+        logo = gtk.Label()
         logo.set_use_markup(gtk.TRUE)
         logo.set_markup('<span size="38000"><b>BitLog</b></span>')
-        
+
         # 图标
         login_img = gtk.Image()
         login_img.set_from_file("login.png")
@@ -38,7 +37,7 @@ class MainFrame(gtk.Window):
         setting_img.set_from_file("setting.png")
         about_img = gtk.Image()
         about_img.set_from_file("about.png")
-        
+
         login_btn = gtk.Button() # 登录按钮
         login_btn.set_image(login_img)
         login_btn.connect("clicked", self.login)
@@ -71,7 +70,7 @@ class MainFrame(gtk.Window):
 
         self.add(fixed)
         self.show_all()
-    
+
         # 检查本地是否存有账号和密码
         global user, pswd, sta
         try:
@@ -88,7 +87,7 @@ class MainFrame(gtk.Window):
             user = ''
             pswd = ''
             sta = 0
-    
+
     # 登录
     def login(self, widget):
         if user == '' or pswd == '':
@@ -103,7 +102,7 @@ class MainFrame(gtk.Window):
     def logout(self, widget):
         info  = log_out(user, pswd)
         self.Message(self, info)
-        
+
     # 设置
     def Se(self, widget):
         settings()
@@ -133,12 +132,12 @@ class MainFrame(gtk.Window):
         else:
             info = u"暂时无法完成操作"
 
-        md = gtk.MessageDialog(self, 
-            gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, 
+        md = gtk.MessageDialog(self,
+            gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
             gtk.BUTTONS_CLOSE, info)
         md.run()
         md.destroy()
-        
+
     # 关于框
     def Ab(self, widget):
         about = gtk.AboutDialog()
@@ -150,17 +149,18 @@ class MainFrame(gtk.Window):
         about.run()
         about.destroy()
 
+
 class settings(gtk.Window):
     def __init__(self):
         super(settings, self).__init__()
-        
+
         self.set_title("Settings")
         self.set_default_size(250, 120)
         self.set_position(gtk.WIN_POS_CENTER)
-        
+
         global user_entry, pswd_entry, sta
 
-        
+
         user_label = gtk.Label(u"用户名")
         pswd_label = gtk.Label(u"密码")
         user_entry = gtk.Entry(40)
@@ -171,11 +171,11 @@ class settings(gtk.Window):
 
         sta_btn = gtk.CheckButton(u"仅使用免费流量") # 是否国际流量
         sta_btn.connect("clicked", self.sta_change)
-        
+
         save_btn = gtk.Button(u"保存") # 保存按钮
         save_btn.connect("clicked", self.save)
         save_btn.set_size_request(50, 30) # 按钮大小
-        
+
         # 控件布局
         fixed = gtk.Fixed()
         fixed.put(user_label, 20, 25)
@@ -187,7 +187,7 @@ class settings(gtk.Window):
 
         self.add(fixed)
         self.show_all()
-    
+
         try:
             fuser = file('user.pkl','rb+')
             fpswd = file('pswd.pkl','rb+')
@@ -227,9 +227,10 @@ class settings(gtk.Window):
         pickle.dump(sta,fsta)
         self.destroy()
 
+
 # 登录和注销
 def log_in(user, password, sta):
-    #处理Cookie信息
+    # 处理Cookie信息
     cj = cookielib.LWPCookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     urllib2.install_opener(opener)
@@ -237,11 +238,11 @@ def log_in(user, password, sta):
     a = md5.new(password)
     pswd = a.hexdigest()
     login_pswd = pswd[8:-8]
-    
+
     log_url = 'http://10.0.0.55/cgi-bin/do_login'#post_url
     login_info = {
-        'drop' : sta,    #1为仅访问免费资源，0为可以使用国际流量
-        'n' : 100,     #100为正常登陆，1为强制注销
+        'drop' : sta,  #1为仅访问免费资源，0为可以使用国际流量
+        'n' : 100,  #100为正常登陆，1为强制注销
         'password' : login_pswd,
         'type': 1,
         'username' : user}
@@ -249,17 +250,18 @@ def log_in(user, password, sta):
         log_url,
         urllib.urlencode(login_info))
     resp = urllib2.urlopen(req)
-    revalue = resp.read()#读取返回信息
-    if re.search('[^a-z]',revalue[0:1]): #登陆成功
+    revalue = resp.read()  # 读取返回信息
+    if re.search('[^a-z]',revalue[0:1]):  # 登陆成功
         return True, 'succeed'
     else:
         return False, revalue
 
+
 def log_out(user, password):
     log_url = 'http://10.0.0.55/cgi-bin/force_logout'
     logout_info = {
-        'drop' : 0,     #1为仅访问免费资源，0为可以使用国际流量
-        'n' : 1,        #100为正常登陆，1为强制注销
+        'drop' : 0,  # 1为仅访问免费资源，0为可以使用国际流量
+        'n' : 1,  # 100为正常登陆，1为强制注销
         'password' : password,
         'type': 1,
         'username' : user}
@@ -268,7 +270,8 @@ def log_out(user, password):
         urllib.urlencode(logout_info))
     resp = urllib2.urlopen(req)
     revalue = resp.read()
-    return revalue # 返回注销结果
+    return revalue  # 返回注销结果
+
 
 if __name__ == '__main__':
     MainFrame()
